@@ -1,0 +1,411 @@
+---
+title: "Hjemmeoppgaver 2"
+author: "André Seyffarth Aarnes"
+date: "22 oktober 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(lubridate)
+library(purrr)
+library(readxl)
+library(readr)
+library(geosphere)
+library(tidyr)
+
+
+
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+# 2 Enkle funksjoner
+
+Intro
+
+```{r}
+
+trekk_fra_tre <- function(x) {
+  
+  x - 3
+  
+}
+
+x <- c(10, 20, 30)
+
+trekk_fra_tre(x)
+
+
+
+
+```
+
+
+Definerer vektorene som skal brukes i oppgavene
+
+```{r}
+
+x <- c(1, 2, 3, 10)
+y <- c(4, 5, 6, 23)
+
+```
+
+
+## 2.1 Summer to tall
+
+```{r}
+
+summer_to_tall <- function(x, y) {
+  
+  x + y
+  
+}
+
+summer_to_tall(x, y)
+
+```
+
+
+## 2.2 Multipliser to tall
+
+```{r}
+
+multipliser_to_tall <- function(x, y) {
+  
+  x * y
+  
+}
+
+multipliser_to_tall(x, y)
+
+```
+
+
+## 2.3 Feilmelding
+
+
+```{r}
+
+kvadrer_x <- function(x) {
+  
+  x^2
+  
+}
+
+kvadrer_x(x)
+
+
+```
+
+Feilmeldingen kommer av at man har glemt å definere en default value i funksjonen. Funksjonen vet derfor ikke hva slags verdi den skal bruke når denne verdien ikke er definert.
+
+
+## 2.4 Default value
+
+Default verdien c("pearson", "kendall", "spearman") er hvilklen metode funksjonen skal bruke for å beregne korrellasjon. Her er flere metoder nevnt og funksjonen vil bruke den første som fungerer på datasettet. Pearson er altså default, men vil gå over til Kendall dersom denne ikke fungerer.
+
+
+
+## 2.5 Finnes 2 i vektoren?
+
+```{r}
+
+finnes2 <- function(x) {
+  
+  any(x == 2)
+  
+}
+
+finnes2(x)
+finnes2(y)
+
+
+```
+
+
+## 2.6 Dårlig idé
+
+Det er en dårlig idé å gi funksjoner samme navn som allerede er brukt. Man må da spesifisere for R at funksjonen er en funksjon, og hvilken av funksjonene dersom det er flere av disse.
+
+
+
+## 2.7 Partall
+
+```{r}
+
+er_partall <- function(x) {
+  
+ x %% 2 == 0
+  
+}
+
+er_partall(4)
+
+er_partall(5)
+
+
+```
+
+Ingen poeng i å lage er_oddetall da dette tilsvarer at er_partall gir FALSE
+
+
+## 2.8 IF ELSE IFELSE
+
+ifelse gir muligheten til å sjekke ikke-binære if-statements. Dette er også mulig ved å bruke if else-statements, men disse tar mer plass og er rotete. Anbefaler å bruke ifelse i funksjoner.
+
+
+
+
+## 2.9 Funksjonen virker ikke
+```{r}
+
+lag_histogram <-  function(.data, variabel) {
+  
+  .data %>% 
+    ggplot(aes(x = {{variabel}})) + 
+    geom_histogram()
+  
+}
+
+lag_histogram(mtcars, hp)
+
+
+```
+
+Funksjonen virket ikke da R ikke forstår automatisk at vi mener objektet variabel
+
+
+# 3 God
+
+```{r}
+
+god_noe <- function(x = lubridate::now()) {
+  
+  ifelse(hour(x) < 10, "God morgen, idiot", ifelse(hour(x) < 12, "God formiddag, idiot", ifelse(hour(x) < 17, "God ettermidag, idiot", "God kveld, idiot")))
+  
+}
+
+god_noe()
+
+```
+
+# 4 Konvertering 1
+
+
+```{r}
+
+celsius <- function(x) {
+  
+  round((x - 32) * 5 / 9, 0)
+  
+}
+
+celsius(32)
+celsius(64)
+
+
+fahrenheit <- function(x) {
+  
+  round((9 * x / 5) + 32)
+  
+}
+
+fahrenheit(0)
+fahrenheit(100)
+
+celsius(fahrenheit(23))
+
+```
+
+# 5 DingDong
+
+```{r}
+
+dingdong <- function(x) {
+  case_when(
+    x %% 3 == 0 & x %% 5 == 0 ~"DingDong",
+    x %% 3 == 0 ~ "Ding", 
+    x %% 5 == 0 ~ "Dong",
+  TRUE ~ as.character(x)
+  )
+}
+
+dingdong(c(1:100))
+
+```
+
+
+
+# 6 print_all
+
+```{r}
+
+print_all <- function(.data, x) {
+  
+  print(.data, n = x)
+  
+}
+
+
+iris %>% as_tibble %>% head(25) %>%  print_all()
+
+```
+
+# 7 Passordgenerator
+
+```{r}
+
+passord_vektor <- c(letters, LETTERS, 0:9)
+
+passord <- function(x) {
+  
+  passord_vektor[sample(1:length(passord_vektor), x, replace=T)]
+  
+}
+
+passord(16)
+
+
+```
+
+
+# 8 NA-funksjoner
+
+```{r}
+
+antall_na <- function(x) {
+  
+  sum(is.na(x))
+  
+}
+
+
+
+prosent_na <- function(x) {
+  
+  antall_na(x) / count(x)
+  
+}
+
+antall_na(airquality)
+prosent_na(airquality)
+
+
+```
+
+# 9 Innlastning av mange datafiler
+
+```{r}
+
+file_paths <- fs::dir_ls(path = "./Karakterer_per_fylke", regexp = "\\.csv$")
+
+karakter_data <- map_dfr(file_paths, ~readr::read_csv2(., skip_empty_rows = T, col_types = cols()))
+
+karakter_data2 <- karakter_data %>%
+  na.omit() %>%
+  separate(variabel, c("variabel", "year"), "_") %>%
+  filter(variabel == "Gjennomsnittlig standpunktkarakter")
+
+
+
+finn_beste_fylke <- function(.data, year, fag = fag, kjonn = kjonn) {
+  .data %>% 
+  filter(year == {{year}}) %>%
+  filter(fag == {{fag}}) %>%
+  filter(kjonn == {{kjonn}}) %>% 
+  group_by(fylke) %>% 
+  summarise(gjennomsnittlig_karakter = mean(values)) %>% 
+    arrange(-gjennomsnittlig_karakter) %>% 
+    top_n(10)
+}
+
+
+karakter_data2 %>% 
+  finn_beste_fylke(year = 2016, fag = "Engelsk skriftlig", kjonn = "Jenter")
+
+karakter_data2 %>% 
+  finn_beste_fylke(year = 2016)
+
+```
+
+# 10 Fleksible plots
+
+```{r}
+
+
+```
+
+# 11 Konvertering 2
+
+```{r}
+
+mpg_til_kpl <- function(x) {
+  x * 0.425144
+}
+
+mpg_til_kpl(15)
+
+
+
+plot_mot_kpl <- function(x) {
+      kpl <- mpg_til_kpl(mtcars$mpg)
+      ggplot(mtcars, aes(x = {{x}}, y = kpl)) + geom_jitter()
+}
+
+
+plot_mot_kpl(cyl)
+
+```
+
+
+# 12 Rescale
+
+```{r}
+
+if (!require(quantmod)) {
+  install.packages("quantmod")
+}
+
+if (!require(reshape)) {
+  install.packages("reshape")
+}
+
+```
+
+```{r}
+
+# Last ned aksjedata
+quantmod::getSymbols(c("GOOGL", "AAPL", "FB"), from = "2019-01-01")
+
+# Lag liste av dataframes. Gjør radnavn til kolonne med navn "Dato"
+list_of_df <- map(.x = list(FB = FB, GOOGL = GOOGL, AAPL = AAPL), 
+                  .f = ~(rownames_to_column(.data = as.data.frame(.), 
+                                            var = "Dato")))
+
+# Join alle dfs på Dato
+df_stocks <- reshape::merge_recurse(list_of_df)
+
+# Plot
+df_stocks %>% 
+  select(Dato, contains("Close")) %>% 
+  pivot_longer(-Dato, names_to = "Stock", values_to = "Close_rescaled") %>% 
+  ggplot(aes(x = as.Date(Dato), y = Close_rescaled, col = Stock, group = Stock)) + 
+  geom_line() + 
+  theme_bw()
+
+```
+
+
+```{r}
+
+
+
+
+
+
+
+
+```
+

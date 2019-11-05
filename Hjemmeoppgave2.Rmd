@@ -15,8 +15,23 @@ library(geosphere)
 library(tidyr)
 
 
+# JP:
+# Hei André
+# Her var det veldig mye bra! Jeg har lagt ved noen kommentarer og tilbakemeldinger
+# markert med "JP:". Håper de er nyttige for deg :-)
+
 
 knitr::opts_chunk$set(echo = TRUE)
+
+# JP:
+# Kommentar til bruk av GitHub:
+# Jeg ser at du har committet hele Markdownfilen i én commit, og at du ikke har 
+# skrevet commit melding annet enn "x". Det er forståelig at det ikke frister å 
+# bruke tid på dette, men på prosjekt ligger mye av verdien med GitHub i at man
+# har hele historikken lett tilgjengelig. Så husk å committe underveis og å 
+# skrive gode commit messages på prosjekt! Les gjerne tips for commit messages
+# i slidene fra sesjon 2. 
+
 ```
 
 
@@ -121,6 +136,9 @@ finnes2 <- function(x) {
 finnes2(x)
 finnes2(y)
 
+# JP:
+# God bruk av any()! Fin funksjon 
+
 
 ```
 
@@ -155,6 +173,14 @@ Ingen poeng i å lage er_oddetall da dette tilsvarer at er_partall gir FALSE
 
 ifelse gir muligheten til å sjekke ikke-binære if-statements. Dette er også mulig ved å bruke if else-statements, men disse tar mer plass og er rotete. Anbefaler å bruke ifelse i funksjoner.
 
+```{r}
+
+# JP:
+# Hovedforskjellen er at if-statements kun evaluerer ett uttrykk, og  brukes til 
+# control-flow i script/funksjoner. Ifelse er vektorisert og egner seg godt til
+# f.eks. variabeltransformasjon. Begge har sine fordeler i funksjoner.
+
+```
 
 
 
@@ -188,6 +214,13 @@ god_noe <- function(x = lubridate::now()) {
 }
 
 god_noe()
+
+# JP:
+# Godt bruk av "hour()", og supert at funksjonen er vektorisert"! 
+# Tips: Når man må bruke flere "ifelse" inne i hverandre så er det ofte enklere 
+# å bruke "case_when()".
+
+
 
 ```
 
@@ -234,6 +267,9 @@ dingdong <- function(x) {
 
 dingdong(c(1:100))
 
+# JP:
+# Nydelig løsning!
+
 ```
 
 
@@ -251,6 +287,12 @@ print_all <- function(.data, x) {
 
 iris %>% as_tibble %>% head(25) %>%  print_all()
 
+# JP:
+# Denne funker ikke (man bare ser det ikke fordi man bruker den i en 
+# markdown-chunk). Man får error dersom man kjører den i et script eller consollen
+# fordi x mangler. Se løsningsforslag. 
+
+
 ```
 
 # 7 Passordgenerator
@@ -266,6 +308,14 @@ passord <- function(x) {
 }
 
 passord(16)
+
+
+# JP:
+# Grei løsning, men funksjoner bør generelt ikke benytte seg av variabler utenfor
+# funksjonen, slik man gjør her med 'passord_vektor'. Definer passord_vektor i 
+# funksjonen eller send den inn som input istedenfor.
+
+
 
 
 ```
@@ -299,6 +349,11 @@ prosent_na(airquality)
 
 ```{r}
 
+# JP:
+# Jeg får ikke testet denne fordi du ikke har lastet opp "Karakterer_per_fylke" 
+# til github. Men det ser veldig riktig ut. 
+
+
 file_paths <- fs::dir_ls(path = "./Karakterer_per_fylke", regexp = "\\.csv$")
 
 karakter_data <- map_dfr(file_paths, ~readr::read_csv2(., skip_empty_rows = T, col_types = cols()))
@@ -309,6 +364,9 @@ karakter_data2 <- karakter_data %>%
   filter(variabel == "Gjennomsnittlig standpunktkarakter")
 
 
+
+# JP:
+# Lurt å utvide funksjonen på denne måten!
 
 finn_beste_fylke <- function(.data, year, fag = fag, kjonn = kjonn) {
   .data %>% 
@@ -356,6 +414,14 @@ plot_mot_kpl <- function(x) {
 
 
 plot_mot_kpl(cyl)
+
+# JP:
+# God løsning. Generelt tror jeg at jeg ville lagt kpl til som en kolonne i mtcars
+# ved mutate eller "mtcars$kpl <-" slik at ggplot finner alt som kolonner i 
+# datasettet, men helt greit det du har gjort. 
+# Obs: geom_jitter endrer litt på alle punktene og egner seg best hvis man skal
+# plotte mye data eller diskrete variabler. Her er nok geom_point bedre. 
+
 
 ```
 
